@@ -2,5 +2,9 @@
 {
   "name": "deluispablo",
   "compatibility_date": "2026-08-22",
-  "assets": { "directory": "./public" }
+  "assets": { "directory": "./public" },
+  "routes": [
+    { "pattern": "deluispablo.com", "custom_domain": true },
+    { "pattern": "www.deluispablo.com", "custom_domain": true }
+  ]
 }
