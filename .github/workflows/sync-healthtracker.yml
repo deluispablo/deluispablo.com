@@ -1,0 +1,44 @@
+# Keeps public/healthtracker/ in step with landing/index.html on health-tracker's main branch.
+name: Sync Health Tracker landing
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-healthtracker
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch the landing from health-tracker
+        id: fetch
+        run: |
+          url=https://raw.githubusercontent.com/deluispablo/health-tracker/main/landing/index.html
+          if curl -fsSL "$url" -o /tmp/index.html; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "landing/index.html is not on main yet; nothing to sync."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit when it changed
+        if: steps.fetch.outputs.found == 'true'
+        run: |
+          cp /tmp/index.html public/healthtracker/index.html
+          if git diff --quiet; then
+            echo "Already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(healthtracker): sync the landing from health-tracker"
+          git push
