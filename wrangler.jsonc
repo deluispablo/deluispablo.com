@@ -1,0 +1,6 @@
+// Static site served by Workers static assets; only public/ is published.
+{
+  "name": "deluispablo",
+  "compatibility_date": "2026-08-22",
+  "assets": { "directory": "./public" }
+}
